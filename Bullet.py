@@ -3,6 +3,7 @@ from pygame.sprite import Sprite
 class bullet(Sprite):
     def __init__(self, game):
         super().__init__()
+        self.game = game
         self.screen = game.screen
         self.settings = game.settings
         self.color = self.settings.bullet_color
@@ -17,5 +18,8 @@ class bullet(Sprite):
         else:
             self.yPos -= self.settings.bullet_speed
             self.rect.y = self.yPos
+        collisions = pygame.sprite.groupcollide(self.game.bullets,self.game.aliens,True,True)
+        if not self.game.aliens:
+            self.game._create_fleet()
     def draw(self):
         pygame.draw.rect(self.screen , self.color, self.rect)

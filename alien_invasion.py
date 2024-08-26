@@ -7,18 +7,21 @@ from Ship import ship
 from Bullet import bullet
 from Alien import alien
 from Star import star
+from time import sleep
+from Game_stats import GameStats
 
 class Alien_invasion :
     def __init__(self) :
         pygame.init()
         self.settings = settings()
-        #self.screen = pygame.display.set_mode((400,400))
+        # self.screen = pygame.display.set_mode((800,900))
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         self.settings.screen_width = self.screen.get_rect().width
         self.settings.screen_height = self.screen.get_rect().height
         pygame.display.set_caption("Alien Invasion")
+        self.stats = GameStats(self)
         self.ship = ship(self)
-        self.fps =0
+        self.fps = 0
         self.font = pygame.font.SysFont('Consolas', 30)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
@@ -34,6 +37,7 @@ class Alien_invasion :
         while (True) :
             self._check_event()
             self.ship.update_position()
+            self.update_aliens()
             self.bullets.update()
             
                 
@@ -59,8 +63,31 @@ class Alien_invasion :
                 self._check_keyup_event(event)
         
             
+    def update_aliens(self):
+        self.aliens.update()
+        self.check_fleet_edges()
+        if pygame.sprite.spritecollideany(self.ship,self.aliens):
+            self.ship_hit()
+    def ship_hit(self):
+        self.stats.ships_left -= 1
+        self.bullets.empty()
+        self.aliens.empty()
+        self._create_fleet()
+        self.ship.center_ship()
+        sleep(0.5)
+    
+    def check_fleet_edges(self):
+        for alien in self.aliens.sprites():
+            if alien.check_edge():
+                self.change_fleet_direction()
+                break
 
+    def change_fleet_direction(self):
+        for alien in self.aliens.sprites():
+            alien.rect.y+=self.settings.alien_drop_speed
+        self.settings.fleet_direction *=-1
 
+        
                     
     def _update_screen(self):
         self.screen.fill(self.settings.bg_color)

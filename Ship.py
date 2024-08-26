@@ -8,7 +8,7 @@ class ship:
         self.screen_rect = ai_game.screen.get_rect()
         self.image = pygame.image.load("images\space_ship.png")
         self.rect = self.image.get_rect()
-        self.rect.midbottom = self.screen_rect.midbottom
+        self.center_ship()
 
         self.xPos= self.rect.centerx
 
@@ -22,6 +22,11 @@ class ship:
             self.xPos -= ship.SPEED*ship.STEP
         self.rect.centerx = floor(self.xPos)
        
+    def center_ship(self):
+        self.rect.midbottom = self.screen_rect.midbottom
+        self.x = float(self.rect.x)
+        self.xPos= self.rect.centerx
+        print("centered")
 
     def blitme(self):
         self.screen_space.blit(self.image, self.rect)
